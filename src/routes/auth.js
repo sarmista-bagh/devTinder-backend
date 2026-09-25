@@ -37,23 +37,142 @@ authRouter.post("/signup", async (req, res) => {
 
 
 
+// authRouter.post("/login", async (req, res) => {
+//     try {
+
+//         const { emailId, password } = req.body;
+//         const user = await User.findOne({ emailId: emailId });//Find one user whose emailId matches the email the client provided
+//         if (!user) {
+//             throw new Error("Invalid Credentials")
+//         }
+//         const isPasswordValid = await user.validatePassword(password);
+
+//         if (!isPasswordValid) {
+//             return res.status(401).json({
+//                 message: "Invalid Credentials",
+//             });
+//         }
+
+//         // Only correct password reaches here
+//         const token = await user.getJWT();
+
+//         res.cookie("token", token, {
+//             expires: new Date(Date.now() + 8 * 3600000),
+//         });
+
+//         return res.status(200).json({
+//             message: "Login successful",
+//             user,
+//         });
+
+//         // // const isPasswordValid = await bcrypt.compare(password, user.password);
+//         // const isPasswordValid = await user.validatePassword(password); //This validatePassword is coming from user.j model
+//         // if (isPasswordValid) {
+
+//         //     //Create a jwt token
+//         //     // const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$790", { expiresIn: "7d", });//sign() creates a JWT.
+//         //     const token = await user.getJWT();//This getJWT() is coming from user.js model
+//         //     // console.log(token);
+
+//         //     //Add the token to cookies and send the response back to the user
+//         //     // res.cookie("token","ddjddjejdijwiowkfnsdjsdndjwbdwuijewiodmvnpoebwjfas");//hardcoded token it is
+
+//         //     res.cookie("token", token, { expires: new Date(Date.now() + 8 * 3600000) })//Put JWT into cookie
+
+
+//         //     // console.log("✅ Sending response");
+
+//         //     return res.status(200).json({
+//         //         message: "Login successful",
+//         //         user
+//         //     });
+
+
+//         // }
+
+//     } catch (err) {
+//         // res.status(400).send("ERROR:" + err.message);
+//         res.status(400).json({
+//             message: err.message,
+//         });
+//     }
+// })
+
+
+
+// authRouter.post("/login", async (req, res) => {
+//     try {
+//         const { emailId, password } = req.body;
+
+//         // Find user by email
+//         const user = await User.findOne({ emailId: emailId });
+
+//         if (!user) {
+//             return res.status(401).json({
+//                 message: "Invalid Credentials",
+//             });
+//         }
+
+//         // Validate password
+//         const isPasswordValid = await user.validatePassword(password);
+
+//         if (!isPasswordValid) {
+//             return res.status(401).json({
+//                 message: "Invalid Credentials",
+//             });
+//         }
+
+//         // Only correct password reaches here
+//         const token = await user.getJWT();
+
+//         // Store JWT in cookie
+//         res.cookie("token", token, {
+//             expires: new Date(Date.now() + 8 * 3600000),
+//         });
+
+//         // Login successful
+//         return res.status(200).json({
+//             message: "Login successful",
+//             user,
+//         });
+
+//     } catch (err) {
+//         console.log("LOGIN ERROR:", err.message);
+
+//         return res.status(400).json({
+//             message: err.message,
+//         });
+//     }
+// });
+
+
 authRouter.post("/login", async (req, res) => {
     try {
-
         const { emailId, password } = req.body;
-        const user = await User.findOne({ emailId: emailId });//Find one user whose emailId matches the email the client provided
-        if (!user) {
-            throw new Error("Invalid Credentials")
-        }
-        const isPasswordValid = await user.validatePassword(password);
 
-        if (!isPasswordValid) {
+        console.log("EMAIL ENTERED:", emailId);
+        console.log("PASSWORD RECEIVED:", !!password);
+
+        const user = await User.findOne({ emailId });
+
+        console.log("USER FOUND:", !!user);
+
+        if (!user) {
             return res.status(401).json({
-                message: "Invalid Credentials",
+                message: "Invalid email or password",
             });
         }
 
-        // Only correct password reaches here
+        const isPasswordValid = await user.validatePassword(password);
+
+        console.log("PASSWORD VALID:", isPasswordValid);
+
+        if (!isPasswordValid) {
+            return res.status(401).json({
+                message: "Invalid email or password",
+            });
+        }
+
         const token = await user.getJWT();
 
         res.cookie("token", token, {
@@ -65,38 +184,18 @@ authRouter.post("/login", async (req, res) => {
             user,
         });
 
-        // // const isPasswordValid = await bcrypt.compare(password, user.password);
-        // const isPasswordValid = await user.validatePassword(password); //This validatePassword is coming from user.j model
-        // if (isPasswordValid) {
-
-        //     //Create a jwt token
-        //     // const token = await jwt.sign({ _id: user._id }, "DEV@Tinder$790", { expiresIn: "7d", });//sign() creates a JWT.
-        //     const token = await user.getJWT();//This getJWT() is coming from user.js model
-        //     // console.log(token);
-
-        //     //Add the token to cookies and send the response back to the user
-        //     // res.cookie("token","ddjddjejdijwiowkfnsdjsdndjwbdwuijewiodmvnpoebwjfas");//hardcoded token it is
-
-        //     res.cookie("token", token, { expires: new Date(Date.now() + 8 * 3600000) })//Put JWT into cookie
-
-
-        //     // console.log("✅ Sending response");
-
-        //     return res.status(200).json({
-        //         message: "Login successful",
-        //         user
-        //     });
-
-
-        // }
-
     } catch (err) {
-        // res.status(400).send("ERROR:" + err.message);
-        res.status(400).json({
+        console.log("LOGIN ERROR:", err.message);
+
+        return res.status(400).json({
             message: err.message,
         });
     }
-})
+});
+
+
+
+
 
 
 //Logout api

@@ -1,7 +1,14 @@
 
 
+// const express = require('express');
+// const { userAuth } = require('../middleware/auth');
+
+// const profileRouter = express.Router();
 const express = require('express');
+
 const { userAuth } = require('../middleware/auth');
+
+const User = require("../models/user");
 
 const profileRouter = express.Router();
 
@@ -19,6 +26,35 @@ profileRouter.get("/profile/view", userAuth, (req, res) => { //The request first
     }
 });
 
+
+
+
+
+
+
+
+profileRouter.get("/profile/:userId", userAuth, async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const user = await User.findById(userId).select("-password");
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+            });
+        }
+
+        return res.status(200).json(user);
+
+    } catch (err) {
+        console.log("VIEW USER PROFILE ERROR:", err.message);
+
+        return res.status(400).json({
+            message: err.message,
+        });
+    }
+});
 
 
 //Before the profile is edited, this middleware userauth, checks whether the user is logged in. 
